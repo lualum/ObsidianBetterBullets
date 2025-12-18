@@ -1,0 +1,10 @@
+{
+    "id": "bullet-to-endash",
+    "name": "Bullet to En Dash",
+    "version": "1.0.0",
+    "minAppVersion": "0.15.0",
+    "description": "Visually replaces bullet points with en dashes in source mode without changing the underlying markdown",
+    "author": "Your Name",
+    "authorUrl": "https://yourwebsite.com",
+    "isDesktopOnly": false
+}
