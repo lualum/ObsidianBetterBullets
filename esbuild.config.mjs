@@ -1,4 +1,3 @@
-// esbuild.config.mjs
 import builtins from "builtin-modules";
 import esbuild from "esbuild";
 import process from "process";

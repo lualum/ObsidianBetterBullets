@@ -1,14 +1,10 @@
 {
-  "leftIndent": 0.65,
-  "enDashRightIndent": -0.37,
-  "arrowRightIndent": -0.67,
-  "doubleArrowRightIndent": -0.72,
   "boldParentText": true,
   "boldGrandparentText": true,
   "enableAutoFormatting": true,
   "parentFontSizeMultiplier": 1.1,
   "grandparentFontSizeMultiplier": 1.3,
-  "leafTextColor": "",
+  "leafTextColor": "#CFCFD0",
   "parentTextColor": "",
   "grandparentTextColor": "",
   "exclamationTextColor": "#D85D95"
