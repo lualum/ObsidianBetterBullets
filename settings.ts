@@ -5,19 +5,13 @@ export interface BetterBulletsSettings {
    boldNonLeafText: boolean; // bold text for non-leaf bullets
    parentSize: number; // font size multiplier for parent bullets
    grandparentSize: number; // font size multiplier for grandparent bullets
-   leafTextColor: string; // color for leaf bullet text
-   parentTextColor: string; // color for parent bullet text
-   grandparentTextColor: string; // color for grandparent bullet text (empty = use accent)
    exclamationTextColor: string; // color for lines ending with !
 }
 
 export const DEFAULT_SETTINGS: BetterBulletsSettings = {
    boldNonLeafText: true,
-   parentSize: 1.0,
-   grandparentSize: 1.0,
-   leafTextColor: "",
-   parentTextColor: "",
-   grandparentTextColor: "",
+   parentSize: 1.2,
+   grandparentSize: 1.4,
    exclamationTextColor: "#773757",
 };
 
@@ -35,8 +29,6 @@ export class BetterBulletsSettingTab extends PluginSettingTab {
 
       containerEl.empty();
 
-      containerEl.createEl("h2", { text: "Bullet to En Dash Settings" });
-
       containerEl.createEl("h3", { text: "Text Formatting" });
 
       // Bold grandparent text
@@ -51,8 +43,6 @@ export class BetterBulletsSettingTab extends PluginSettingTab {
                   await this.plugin.saveSettings();
                })
          );
-
-      containerEl.createEl("hr");
 
       containerEl.createEl("h3", { text: "Font Size Multipliers" });
 
@@ -94,53 +84,7 @@ export class BetterBulletsSettingTab extends PluginSettingTab {
                })
          );
 
-      containerEl.createEl("hr");
-
       containerEl.createEl("h3", { text: "Text Colors" });
-
-      // Leaf text color
-      new Setting(containerEl)
-         .setName("Leaf bullet text color")
-         .setDesc("Color for leaf bullet text (–). Leave empty for default.")
-         .addText((text) =>
-            text
-               .setPlaceholder(d.leafTextColor)
-               .setValue(this.plugin.settings.leafTextColor)
-               .onChange(async (value) => {
-                  this.plugin.settings.leafTextColor = value;
-                  await this.plugin.saveSettings();
-               })
-         );
-
-      // Parent text color
-      new Setting(containerEl)
-         .setName("Parent bullet text color")
-         .setDesc("Color for parent bullet text (→). Leave empty for default.")
-         .addText((text) =>
-            text
-               .setPlaceholder(d.parentTextColor)
-               .setValue(this.plugin.settings.parentTextColor)
-               .onChange(async (value) => {
-                  this.plugin.settings.parentTextColor = value;
-                  await this.plugin.saveSettings();
-               })
-         );
-
-      // Grandparent text color
-      new Setting(containerEl)
-         .setName("Grandparent bullet text color")
-         .setDesc(
-            "Color for grandparent bullet text (⇒). Leave empty to use accent color."
-         )
-         .addText((text) =>
-            text
-               .setPlaceholder(d.grandparentTextColor)
-               .setValue(this.plugin.settings.grandparentTextColor)
-               .onChange(async (value) => {
-                  this.plugin.settings.grandparentTextColor = value;
-                  await this.plugin.saveSettings();
-               })
-         );
 
       // Exclamation text color
       new Setting(containerEl)
@@ -158,13 +102,11 @@ export class BetterBulletsSettingTab extends PluginSettingTab {
                })
          );
 
-      containerEl.createEl("hr");
-
       containerEl.createEl("h3", { text: "Symbol Legend" });
 
       const legendContainer = containerEl.createDiv({ cls: "bullet-legend" });
       legendContainer.createEl("p", {
-         text: "– Leaf bullets with no children",
+         text: "- Leaf bullets with no children",
       });
       legendContainer.createEl("p", { text: "→ Parent bullets with children" });
       legendContainer.createEl("p", {

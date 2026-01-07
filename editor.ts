@@ -44,62 +44,69 @@ export function bulletReplacementPlugin(plugin: BetterBulletsPlugin) {
          format(view: EditorView): DecorationSet {
             const builder = new RangeSetBuilder<Decoration>();
             const lines = view.state.doc.toString().split("\n");
+            const n = lines.length;
 
-            // First pass: analyze structure (reverse order to determine hierarchy)
-            const lineInfo: Array<{ indent: number; level: number }> = [];
-            let block = { level: -1, indent: Infinity };
+            // levels[i] stores the LIS length starting at line i
+            const levels: number[] = new Array(n).fill(0);
+            const indents: (number | null)[] = new Array(n).fill(null);
 
-            for (let lineNum = lines.length - 1; lineNum >= 0; lineNum--) {
-               const regex = lines[lineNum].match(/^(\s*)([-*+])(\s)(.*)$/);
-               if (!regex) {
-                  lineInfo[lineNum] = { indent: -1, level: -1 };
-                  continue;
+            // 1. Pre-calculate indents for all bullet lines
+            for (let i = 0; i < n; i++) {
+               const match = lines[i].match(/^(\s*)([-*+])(\s)(.*)$/);
+               if (match) {
+                  const tabSize = view.state.tabSize || 4;
+                  indents[i] = match[1].replace(
+                     /\t/g,
+                     " ".repeat(tabSize)
+                  ).length;
+                  levels[i] = 1; // Minimum sequence length is 1
                }
-
-               const tabSize = 4;
-               const indent = regex[1].replace(
-                  /\t/g,
-                  " ".repeat(tabSize)
-               ).length;
-
-               if (indent < block.indent) {
-                  block = {
-                     level: block.level + 1,
-                     indent,
-                  };
-               } else {
-                  block = { level: 0, indent };
-               }
-
-               lineInfo[lineNum] = { indent, level: block.level };
             }
 
-            // Second pass: apply decorations in forward order
-            let index = 0;
+            // 2. DP Pass: Right-to-Left
+            for (let i = n - 1; i >= 0; i--) {
+               const currentIndent = indents[i];
+               if (currentIndent === null) continue;
 
-            for (let lineNum = 0; lineNum < lines.length; lineNum++) {
-               const regex = lines[lineNum].match(/^(\s*)([-*+])(\s)(.*)$/);
-               if (!regex) {
-                  index += lines[lineNum].length + 1;
+               for (let j = i + 1; j < n; j++) {
+                  const nextIndent = indents[j];
+                  if (nextIndent === null) continue;
+
+                  // If we find a strictly deeper indent, try to extend that sequence
+                  if (nextIndent > currentIndent) {
+                     levels[i] = Math.max(levels[i], 1 + levels[j]);
+                  }
+
+                  if (nextIndent <= currentIndent) break;
+               }
+            }
+
+            // 3. Second pass: Apply decorations
+            let index = 0;
+            for (let lineNum = 0; lineNum < n; lineNum++) {
+               const line = lines[lineNum];
+               const regex = line.match(/^(\s*)([-*+])(\s)(.*)$/);
+
+               if (!regex || levels[lineNum] === 0) {
+                  index += line.length + 1;
                   continue;
                }
 
-               const level = lineInfo[lineNum].level;
+               const depthLevel = levels[lineNum] - 1;
                const bulletPos = index + regex[1].length;
-
-               // Collect all decorations for this line
                const pendingDecorations: PendingDecoration[] = [];
 
                const symbol = this.applyModifiers(
                   pendingDecorations,
                   regex,
                   index,
-                  level
+                  depthLevel
                );
 
                const bulletDecoration = Decoration.replace({
                   widget: new BulletWidget(this.plugin.settings, symbol),
                });
+
                pendingDecorations.push({
                   from: bulletPos,
                   to: bulletPos + 1,
@@ -107,12 +114,11 @@ export function bulletReplacementPlugin(plugin: BetterBulletsPlugin) {
                });
 
                pendingDecorations.sort((a, b) => a.from - b.from);
-
                for (const { from, to, decoration } of pendingDecorations) {
                   builder.add(from, to, decoration);
                }
 
-               index += lines[lineNum].length + 1;
+               index += line.length + 1;
             }
 
             return builder.finish();
@@ -150,6 +156,9 @@ export function bulletReplacementPlugin(plugin: BetterBulletsPlugin) {
                   styles.push(`font-size: ${fontSize}`);
                   break;
             }
+            if (this.plugin.settings.boldNonLeafText && level > 0) {
+               styles.push("font-weight: bold");
+            }
 
             // Apply font size to entire line if level > 0
             if (fontSize) {
@@ -157,7 +166,11 @@ export function bulletReplacementPlugin(plugin: BetterBulletsPlugin) {
                const lineEnd = textIndex + trimOffset + text.length;
                const fontSizeDecoration = Decoration.mark({
                   attributes: {
-                     style: `font-size: ${fontSize};`,
+                     style: `font-size: ${fontSize}; font-weight: ${
+                        this.plugin.settings.boldNonLeafText && level > 0
+                           ? "bold"
+                           : "normal"
+                     }`,
                   },
                });
                decorations.push({
