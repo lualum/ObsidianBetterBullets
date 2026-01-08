@@ -14,8 +14,14 @@ export class BulletWidget extends WidgetType {
 
    toDOM(): HTMLElement {
       const span = document.createElement("span");
-      span.textContent = " " + this.type.symbol;
-      span.style = this.type.style || "";
+
+      span.textContent = this.type.symbol;
+      span.style.cssText = this.type.style || "";
+      span.style.position = "relative";
+      span.style.left = "1.0em";
+      span.style.transform = "translateX(-50%)";
+      span.style.display = "inline-block";
+
       return span;
    }
 }

@@ -1,4 +1,4 @@
-import { RangeSetBuilder } from "@codemirror/state";
+import { RangeSetBuilder, StateEffect } from "@codemirror/state";
 import {
    Decoration,
    DecorationSet,
@@ -8,6 +8,8 @@ import {
 } from "@codemirror/view";
 import type BetterBulletsPlugin from "main";
 import { BulletWidget } from "widget";
+
+export const forceRefreshEffect = StateEffect.define<null>();
 
 export interface BulletType {
    symbol: string;
@@ -35,7 +37,10 @@ export function bulletReplacementPlugin(plugin: BetterBulletsPlugin) {
             if (
                update.docChanged ||
                update.viewportChanged ||
-               update.selectionSet
+               update.selectionSet ||
+               update.transactions.some((tr) =>
+                  tr.effects.some((e) => e.is(forceRefreshEffect))
+               )
             ) {
                this.decorations = this.format(update.view);
             }

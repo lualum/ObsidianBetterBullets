@@ -28,14 +28,13 @@ export default class BetterBulletsPlugin extends Plugin {
    }
 
    refreshEditors() {
-      // Force all editor views to update
       this.app.workspace.iterateAllLeaves((leaf) => {
-         if (leaf.view.getViewType() === "markdown") {
-            const view = leaf.view as any;
-            if (view.editor?.cm) {
-               view.editor.cm.requestMeasure();
-            }
-         }
+         // @ts-ignore - accessing internal editor
+         const view = leaf.view?.editor?.cm;
+         if (view)
+            view.dispatch({
+               selection: view.state.selection,
+            });
       });
    }
 }
