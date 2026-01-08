@@ -118,11 +118,9 @@ export function bulletReplacementPlugin(plugin: BetterBulletsPlugin) {
             // 2. DP Pass: Right-to-Left
             for (let i = n - 1; i >= 0; i--) {
                const currentIndent = this.getIndentAt(indents, i);
-               if (currentIndent === 0) continue;
 
                for (let j = i + 1; j < n; j++) {
                   const nextIndent = this.getIndentAt(indents, j);
-                  if (nextIndent === 0) continue;
 
                   // If we find a strictly deeper indent, try to extend that sequence
                   if (nextIndent > currentIndent) {
