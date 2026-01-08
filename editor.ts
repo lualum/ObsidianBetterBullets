@@ -217,7 +217,9 @@ export function bulletReplacementPlugin(plugin: BetterBulletsPlugin) {
             // 2. Definition formatting (Term | Definition)
             const pipeIndex = text.indexOf(" | ");
             if (pipeIndex !== -1) {
-               symbolChar = "@";
+               if (this.plugin.settings.useDefinitionSymbol) {
+                  symbolChar = "@";
+               }
 
                // Term (before pipe): bold and highlight
                const termStart = textIndex + trimOffset;

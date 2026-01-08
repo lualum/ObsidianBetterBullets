@@ -3,6 +3,7 @@ import { App, PluginSettingTab, Setting } from "obsidian";
 
 export interface BetterBulletsSettings {
    boldNonLeafText: boolean;
+   useDefinitionSymbol: boolean;
    parentSize: number;
    grandparentSize: number;
    exclamationTextColor: string;
@@ -10,6 +11,7 @@ export interface BetterBulletsSettings {
 
 export const DEFAULT_SETTINGS: BetterBulletsSettings = {
    boldNonLeafText: true,
+   useDefinitionSymbol: false,
    parentSize: 1.2,
    grandparentSize: 1.4,
    exclamationTextColor: "#773757",
@@ -36,6 +38,17 @@ export class BetterBulletsSettingTab extends PluginSettingTab {
                .setValue(this.plugin.settings.boldNonLeafText)
                .onChange(async (value) => {
                   this.plugin.settings.boldNonLeafText = value;
+                  this.triggerRefresh();
+               })
+         );
+
+      new Setting(containerEl)
+         .setName("Use definition symbol")
+         .addToggle((toggle) =>
+            toggle
+               .setValue(this.plugin.settings.useDefinitionSymbol)
+               .onChange(async (value) => {
+                  this.plugin.settings.useDefinitionSymbol = value;
                   this.triggerRefresh();
                })
          );
