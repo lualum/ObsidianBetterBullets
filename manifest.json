@@ -1,9 +1,10 @@
 {
-    "id": "better-bullets",
-    "name": "Better Bullets",
-    "version": "1.0.1",
-    "description": "Improves readability of bulleted notes.",
-    "author": "Lucas Lum",
-    "authorUrl": "https://github.com/lualum/ObsidianBulletStyle",
-    "isDesktopOnly": false
+	"id": "better-bullets",
+	"name": "Better Bullets",
+	"version": "1.0.1",
+	"description": "Improves readability of bulleted notes.",
+	"author": "Lucas Lum",
+	"authorUrl": "https://github.com/lualum",
+	"fundingUrl": "https://www.inspirafoundationinc.org/",
+	"isDesktopOnly": false
 }

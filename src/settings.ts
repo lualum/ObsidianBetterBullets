@@ -108,17 +108,20 @@ export class BetterBulletsSettingTab extends PluginSettingTab {
    }
 
    private ensureLevelExists(index: number): BulletType {
-      if (!this.plugin.settings.bulletTypes[index]) {
-         const defaultBullet = DEFAULT_SETTINGS.bulletTypes[index];
-         this.plugin.settings.bulletTypes[index] = defaultBullet
-            ? { ...defaultBullet }
-            : {
-                 symbol: "*",
-                 fontSize: 1.2 + index * 0.2,
-                 cssClasses: "bold",
-              };
+      if (this.plugin.settings.bulletTypes[index]) {
+         return this.plugin.settings.bulletTypes[index];
       }
-      return this.plugin.settings.bulletTypes[index];
+
+      const newLevel = DEFAULT_SETTINGS.bulletTypes[index]
+         ? { ...DEFAULT_SETTINGS.bulletTypes[index] }
+         : {
+              symbol: "*",
+              fontSize: 1.2 + index * 0.2,
+              cssClasses: "bold",
+           };
+
+      this.plugin.settings.bulletTypes[index] = newLevel;
+      return newLevel;
    }
 
    private createLevelSetting(index: number): Setting {
