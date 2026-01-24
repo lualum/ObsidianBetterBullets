@@ -6,5 +6,6 @@
 	"author": "Lucas Lum",
 	"authorUrl": "https://github.com/lualum",
 	"fundingUrl": "https://www.inspirafoundationinc.org/",
-	"isDesktopOnly": false
+	"isDesktopOnly": false,
+	"minAppVersion": "0.15.0"
 }
